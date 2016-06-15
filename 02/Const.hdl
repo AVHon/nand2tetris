@@ -1,0 +1,22 @@
+/**
+ * Produces one true output and one false output
+ * Alex Von Hoene	30 Nov 2012
+ */
+
+CHIP Const {
+	
+	IN in[16];
+	OUT t, f;
+	
+	PARTS:
+	//FALSE: a bit AND its inverted self = false
+	Not(in=in[0], out=notIn);
+	And(a=in[0], b=notIn, out=f);
+	
+	//Because an output pin can't be connected to a part, produce another false
+	//bit to produce the true bit
+	And(a=in[0], b=notIn, out=false);
+	
+	//TRUE: false inverted = true
+	Not(in=false, out=t);
+}

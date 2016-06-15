@@ -1,0 +1,28 @@
+/**
+ * An AND gate with one 16-bit input, one 1-bit input, and one 16-bit output.
+ * Alex Von Hoene	04 Dec 2012
+ */
+
+ CHIP And16x1 {
+	
+	IN x, y[16];
+	OUT out[16];
+	
+	PARTS:
+	And(a=x, b=y[0], out=out[0]);
+	And(a=x, b=y[1], out=out[1]);
+	And(a=x, b=y[2], out=out[2]);
+	And(a=x, b=y[3], out=out[3]);
+	And(a=x, b=y[4], out=out[4]);
+	And(a=x, b=y[5], out=out[5]);
+	And(a=x, b=y[6], out=out[6]);
+	And(a=x, b=y[7], out=out[7]);
+	And(a=x, b=y[8], out=out[8]);
+	And(a=x, b=y[9], out=out[9]);
+	And(a=x, b=y[10], out=out[10]);
+	And(a=x, b=y[11], out=out[11]);
+	And(a=x, b=y[12], out=out[12]);
+	And(a=x, b=y[13], out=out[13]);
+	And(a=x, b=y[14], out=out[14]);
+	And(a=x, b=y[15], out=out[15]);
+ }

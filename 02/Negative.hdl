@@ -1,0 +1,13 @@
+/*
+ * Output == 1 iff in < 0
+ * Alex Von Hoene	07 Dec 2012
+ */
+
+CHIP Negative {
+
+	IN in[16];
+	OUT out;
+	
+	PARTS:
+	And(a=in[15], b=in[15], out=out);
+}

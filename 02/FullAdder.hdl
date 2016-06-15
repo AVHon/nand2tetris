@@ -1,0 +1,39 @@
+/**
+ * Full adder. Computes sum, the least significant bit of 
+ * a + b + c, and carry, the most significant bit of a + b + c.
+ * Alex Von Hoene	29 Nov 2012
+ */
+ 
+ /*
+  *	a	b	c	sum	carry
+  * 0	0	0	0	0
+  * 0	0	1	1	0
+  * 0	1	0	1	0
+  * 0	1	1	0	1
+  * 1	0	0	1	0
+  * 1	0	1	0	1
+  * 1	1	0	0	1
+  * 1	1	1	1	1
+  */
+
+CHIP FullAdder {
+    IN a, b, c;  // 1-bit inputs
+    OUT sum,     // Right bit of a + b + c
+        carry;   // Left bit of a + b + c
+
+    PARTS:
+    ////HOW MANY INPUTS ARE TRUE?////
+	Xor3(a=a, b=b, c=c, out=oneInput);
+	
+	And(a=a, b=b, out=aAndB);
+	And(a=b, b=c, out=bAndC);
+	And(a=c, b=a, out=aAndC);
+	Xor3(a=aAndB, b=bAndC, c=aAndC, out=twoInputs);
+	
+	And3(a=a, b=b, c=c, out=threeInputs);
+	
+	//SUM is true iff 1 or all 3 inputs are true
+	Or(a=oneInput, b=threeInputs, out=sum);
+	//CARRY is true iff 2 or 3 inputs are true
+	Or(a=twoInputs, b=threeInputs, out=carry);
+}

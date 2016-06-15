@@ -1,0 +1,22 @@
+/**
+ * Exclusiv-or gate with 3 inputs
+ * Alex Von Hoene	30 Nov 2012
+ */
+ 
+ CHIP Xor3 {
+	
+	IN a, b, c;
+	OUT out;
+	
+	PARTS:
+	Xor(a=a, b=b, out=aXorB);
+	Xor(a=aXorB, b=c, out=xorABC);
+	
+	//A special case is when all 3 inputs are 1.
+	//If this case is true, output should=0.
+	And3(a=a, b=b, c=c, out=all3);
+	Not(in=all3, out=notAll3);
+	
+	And(a=xorABC, b=notAll3, out=out);
+	
+ }
