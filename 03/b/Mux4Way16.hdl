@@ -1,0 +1,49 @@
+/**
+ * 4-way 16-bit multiplexor.  
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ * Alex Von Hoene	28 Nov 2012
+ */
+
+
+CHIP Mux4Way16 {
+    IN a[16], b[16], c[16], d[16], sel[2];
+
+    OUT out[16];
+
+    PARTS:
+    
+    ////DETERMINE WHICH INPUT IS SELECTED////
+    //TRUE if A or B is selected (sel[1]=0)
+    Not(in=sel[1], out=aOrB);
+    //TRUE if A or C is selected (sel[0]=0)
+    Not(in=sel[0], out=aOrC);
+    //TRUE if A is selected (se[0]=0 && sel[1]=0)
+    And(a=aOrB, b=aOrC, out=aIsSel);
+    //TRUE if B is selected (sel[0]=1 && sel[1]=0)
+    And(a=aOrB, b=sel[0], out=bIsSel);
+    //TRUE if C is selected (sel[0]=0 && sel[1]=1)
+    And(a=sel[1], b=aOrC, out=cIsSel);
+    //TRUE if D is selected (sel[0]=1 && sel[1]=1)
+    And(a=sel[1], b=sel[0], out=dIsSel);
+    
+    ////BRING SELECTED BITS TO OUTPUT////
+    //if A was selected, bring those bits forward
+    AndSwitch(in=aIsSel, b=a, out=aBits);
+    //if B was selected, bring those bits forward
+    AndSwitch(in=bIsSel, b=b, out=bBits);
+    //if C was selected, brin those bits forward
+    AndSwitch(in=cIsSel, b=c, out=cBits);
+    //if D was selected, bring those bits forward
+    AndSwitch(in=dIsSel, b=d, out=dBits);
+    
+    ////OUTPUT BITS THAT WERE BROUGHT TO OUTPUT////
+    //bring bits from A or B forward
+    Or16(a=aBits, b=bBits, out=aBitsOrBBits);
+    //bring bits from C or D forward
+    Or16(a=cBits, b=dBits, out=cBitsOrDBits);
+    //bring bits from last stage to output
+    Or16(a=aBitsOrBBits, b=cBitsOrDBits, out=out);
+}

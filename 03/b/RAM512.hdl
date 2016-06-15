@@ -1,0 +1,31 @@
+/**
+ * Memory of 512 registers, each 16-bit wide.  
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = RAM512[address(t)](t)
+ *     Write: If load(t-1) then RAM512[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load == 1, the in value is loaded 
+ * into the memory location specified by address.  This value becomes 
+ * available through the out output starting from the next time step.
+ * Alex Von Hoene   10 Dec 2012
+ */
+
+CHIP RAM512 {
+    IN in[16], load, address[9];
+    OUT out[16];
+
+    PARTS:
+
+    RAM64(in=in, load=al, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=ao);
+    RAM64(in=in, load=bl, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=bo);
+    RAM64(in=in, load=cl, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=co);
+    RAM64(in=in, load=dl, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=do);
+    RAM64(in=in, load=el, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=eo);
+    RAM64(in=in, load=fl, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=fo);
+    RAM64(in=in, load=gl, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=go);
+    RAM64(in=in, load=hl, address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=ho);
+
+    Mux8Way16(a=ao, b=bo, c=co, d=do, e=eo, f=fo, g=go, h=ho, sel[2]=address[8], sel[1]=address[7], sel[0]=address[6], out=out);
+
+    DMux8Way(in=load, sel[2]=address[8], sel[1]=address[7], sel[0]=address[6], a=al, b=bl, c=cl, d=dl, e=el, f=fl, g=gl, h=hl);
+}

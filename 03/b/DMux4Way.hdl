@@ -1,0 +1,35 @@
+/**
+ * 4-way demultiplexor.
+ *               a  b  c  d
+ * {a,b,c,d} = {in, 0, 0, 0} if sel == 00
+ *             { 0,in, 0, 0} if sel == 01
+ *             { 0, 0,in, 0} if sel == 10
+ *             { 0, 0, 0,in} if sel == 11
+ * Alex Von Hoene	29 Nov 2012
+ */
+
+
+CHIP DMux4Way {
+
+
+    IN in, sel[2];
+
+    OUT a, b, c, d;
+
+    PARTS:
+    
+    ////DETERMINE WHICH OUTPUT IS SELECTED////
+    Not(in=sel[0], out=aOrC);
+    Not(in=sel[1], out=aOrB);
+    
+    And(a=aOrC,   b=aOrB,   out=aIsSel);
+    And(a=sel[0], b=aOrB,   out=bIsSel);
+    And(a=aOrC,   b=sel[1], out=cIsSel);
+    And(a=sel[0], b=sel[1], out=dIsSel);
+    
+    ////PUT BITS TO SELECTED OUTPUT////
+    And(a=aIsSel, b=in, out=a);
+    And(a=bIsSel, b=in, out=b);
+    And(a=cIsSel, b=in, out=c);
+    And(a=dIsSel, b=in, out=d);
+}
