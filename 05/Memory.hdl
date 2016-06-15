@@ -1,0 +1,69 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/Memory.hdl
+
+/**
+ * This chip implements the complete address space of the 
+ * computer's data memory, including RAM and memory mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: If load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load == 1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output in the next time step.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>0x6000 is invalid. Access to any address in 
+ * the range 0x4000 to 0x5FFF results in accessing the screen memory 
+ * map. Access to address 0x6000 results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the 
+ * Screen and Keyboard chip specifications given in the book.
+ * 
+ * ==================================================================
+ * 
+ * There are 15 bits in for every address.
+ * 000000000000000 through 111111111111111
+ * 
+ * 000000000000000 (00000) through 011111111111111 (16383) is normal RAM memory
+ * 100000000000000 (16384) through 101111111111111 (24575) is Screen memory
+ * 110000000000000 (24576) is the Keyboard memory
+ * 
+ * if address[0] = 0, it goes to RAM16K
+ * else // address[0] = 1
+ * 	    if address[1] = 0, it goes to Screen
+ *      else    //address[1] = 1
+ *          it goes to Keyboard
+ * 
+ *  address[0]  address[1]  chip
+ *      0           0       RAM16K
+ *      0           1       RAM16K
+ *      1           0       Screen
+ *      1           1       Keyboard
+ * 
+ * Alex Von Hoene   7 Feb 2013
+ */
+
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    
+    //DMux4Way(in=load, sel[0]=address[0], sel[1]=address[1], a=ram1Address, b=ram2Address, c=screenAddress, d=keyboardAddress);
+    //Or(a=ram1Address, b=ram2Address, out=ramAddress);
+    Not(in=address[14], out=ramAddress);
+    Not(in=address[13], out=ramOrScreenAddress);
+    And(a=address[14], b=ramOrScreenAddress, out=screenAddress);
+    And(a=address[14], a=address[13], out=keyboardAddress);  //test
+    
+    And(a=ramAddress, b=load, out=loadRam);
+    And(a=screenAddress, b=load, out=loadScreen);
+    
+    RAM16K(in=in, load=loadRam, address[13]=address[13], address[12]=address[12], address[11]=address[11], address[10]=address[10], address[9]=address[9], address[8]=address[8], address[7]=address[7], address[6]=address[6], address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=ramOut);
+    Screen(in=in, load=loadScreen, address[12]=address[12], address[11]=address[11], address[10]=address[10], address[9]=address[9], address[8]=address[8], address[7]=address[7], address[6]=address[6], address[5]=address[5], address[4]=address[4], address[3]=address[3], address[2]=address[2], address[1]=address[1], address[0]=address[0], out=screenOut);
+    Keyboard(out=keyboardOut);
+    
+    Mux4Way16(a=ramOut, b=ramOut, c=screenOut, d=keyboardOut, sel[0]=address[13], sel[1]=address[14], out=out);
+}
