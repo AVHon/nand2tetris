@@ -1,0 +1,14 @@
+/**
+ * And gate with 4 inputs. Out = a && b && c &&d
+ * Alex Von Hoene	29 Nov 2012
+ */
+
+CHIP And4 {
+	IN a, b, c, d;
+	OUT out;
+	
+	PARTS:
+	And(a=a, b=b, out=aAndB);
+	And(a=c, b=d, out=cAndD);
+	And(a=aAndB, b=cAndD, out=out);
+}

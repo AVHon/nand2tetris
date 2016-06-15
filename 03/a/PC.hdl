@@ -1,0 +1,46 @@
+/**
+ * 16-bit counter with load and reset controls.
+ *
+ * If reset(t-1) then out(t) = 0
+ *    else if load(t-1) then out(t) = in(t-1)
+ *         else if inc(t-1) then out(t) = out(t-1) + 1 (integer addition)
+ *              else out(t) = out(t-1)
+ * Alex Von Hoene   11 Dec 2012
+ */
+
+/* reset	load	inc	||	sel[1]	sel[0]
+ * 0		0		0	||	0		0
+ * 0		0		1	||	0		1
+ * 0		1		0	||	1		0
+ * 0		1		1	||	1		0
+ * 1		0		0	||	1		1
+ * 1		0		1	||	1		1
+ * 1		1		0	||	1		1
+ * 1		1		1	||	1		1
+ *
+ * SEL[1]=Or(load, reset)
+ * SEL[0]=Or(And(Nor(reset, load), inc), reset)
+ */
+
+CHIP PC {
+    IN in[16],load,inc,reset;
+    OUT out[16];
+	
+    PARTS:
+	
+	Register(in=recycle, load=true, out=lastNumber);
+	
+    Inc16(in=lastNumber, out=incremented);
+	
+    Or(a=load, b=reset, out=sel1);
+	
+	Or(a=reset, b=load, out=resetOrLoad);
+	Not(in=resetOrLoad, out=notResetOrLoad);
+	And(a=notResetOrLoad, b=inc, out=onlyIncIsTrue);
+	Or(a=onlyIncIsTrue, b=reset, out=sel0);
+	
+    Mux4Way16(a=lastNumber, b=incremented, c=in, d=false, sel[1]=sel1, sel[0]=sel0, out=output, out=recycle);
+	
+	Register(in=output, load=true, out=out);
+}
+
