@@ -1,0 +1,12 @@
+/**
+ * Not gate: out = not in
+ * Alex Von Hoene	28 Nov 2012
+ */
+
+CHIP Not {
+    IN in;
+    OUT out;
+
+    PARTS:
+    Nand(a=in, b=in, out=out);
+}

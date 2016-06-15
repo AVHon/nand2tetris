@@ -1,0 +1,13 @@
+/**
+ * And gate: out = 1 if {a == 1 and b == 1}, 0 otherwise
+ * Alex Von Hoene	28 Nov 2012
+ */
+
+CHIP And {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    Nand(a=a, b=b, out=nandAB);
+    Not(in=nandAB, out=out);
+}

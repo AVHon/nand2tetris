@@ -1,0 +1,14 @@
+/**
+ * And gate with 3 inputs. Out = a && b && c
+ * Alex Von Hoene	28 Nov 2012
+ */
+
+CHIP And3 {
+	IN a, b, c;
+	OUT out;
+	
+	PARTS:
+	And(a=a, b=b, out=aAndB);
+	And(a=c, b=aAndB, out=out);
+}
+ 
